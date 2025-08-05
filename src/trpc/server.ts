@@ -9,11 +9,11 @@ import { createTRPCContext } from "~/server/api/trpc";
 import { createQueryClient } from "./query-client";
 
 /**
- * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
- * handling a tRPC call from a React Server Component.
+ * Wraps `createTRPCContext` to provide the required context for the tRPC API 
+ * when handling a tRPC call from a React Server Component.
  */
 const createContext = cache(async () => {
-  const heads = new Headers(await headers());
+  const heads = headers(); // Already returns a Headers object in Next.js App Router
   heads.set("x-trpc-source", "rsc");
 
   return createTRPCContext({

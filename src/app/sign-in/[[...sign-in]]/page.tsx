@@ -1,11 +1,14 @@
+import { SignIn } from '@clerk/nextjs'
 import React from 'react'
 
 const page = () => {
   return (
-    <div className='text-cyan-300'>
-      HELLO
-    </div>
+    
+        
+      <SignIn/>
+   
   )
 }
 
 export default page
+
