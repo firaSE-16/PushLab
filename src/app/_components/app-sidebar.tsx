@@ -17,6 +17,7 @@ import {
   SidebarMenuItem
 } from '~/components/ui/sidebar'
 import { Button } from '~/components/ui/button'
+import useProject from '~/hooks/use-project'
 
 const items = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
@@ -26,21 +27,9 @@ const items = [
 ]
 
 
-const project = [
-    {
-        name:'Project 1',
-
-    },
-    {
-
-        name:'Project 2',
-    },
-    {
-        name:'Project 3',
-    }
-]
-
 const AppSidebar = () => {
+
+    const {projects,projectId,project,setProjectId} = useProject()
   const pathname = usePathname()
 
   return (
@@ -88,18 +77,19 @@ const AppSidebar = () => {
         <SidebarGroupContent>
             <SidebarMenu>
                 {
-                    project.map(project=>{
+                    projects?.map(project=>{
                         return(
                             <SidebarMenuItem key={project.name}>
                                 <SidebarMenuButton asChild>
-                                   <div>
-                                    <div className={clsx(`rounded-sm border size-6 flex items-center justify-center text-sm text-primary`,true?'bg-primary text-white':"bg-white text-primary")
+                                                       <div onClick={()=>{setProjectId(project.id)}}>
+
+                                    <div className={clsx(`rounded-sm border size-6 flex items-center justify-center text-sm text-primary`,project.id===projectId?'bg-primary text-white':"bg-white text-primary")
                                        
                                     }>
                                         {project.name.charAt(0).toUpperCase()}
 
-
                                     </div>
+                                    <span>{project.name}</span>
 
                                    </div>
                                 </SidebarMenuButton>
@@ -112,8 +102,6 @@ const AppSidebar = () => {
                         )
                     })
                 }
-
-
 
             </SidebarMenu>
                 

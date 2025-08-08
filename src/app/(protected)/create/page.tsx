@@ -3,6 +3,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Button } from '~/components/ui/button';
+import { useRefetch } from '~/hooks/use-refetch';
 import { api } from '~/trpc/react';
 
 type FormInput ={
@@ -15,6 +16,7 @@ type FormInput ={
 
 const page = () => {
     const createProject = api.project.createProject.useMutation();
+    const refetch = useRefetch();
 
 
 
@@ -28,6 +30,7 @@ const page = () => {
         }, {
             onSuccess: () => {
                 toast.success('Project created successfully');
+                refetch()
                 reset();
             },
             onError: () => {
