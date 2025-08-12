@@ -3,10 +3,16 @@
 import { useUser } from "@clerk/nextjs";
 import React from "react";
 import CommitLog from "./commit-log";
-import AskQuestionCard from "~/app/_components/ask-question-card";
+import AskQuestionCard from "~/_components/ask-question-card";
+import useProject from "~/hooks/use-project";
+import MettingCard from "~/_components/meeting-card";
+import ArchiveButton from "~/_components/archive-button";
+import InviteButton from "~/_components/invite-button";
 
 const DashboardPage = () => {
   const { user } = useUser();
+    const { projectId, project } = useProject();
+  
 
   return (
     <div className="relative w-full px-4">
@@ -20,12 +26,8 @@ const DashboardPage = () => {
 
         <div className="flex items-center gap-4">
           <span className="text-sm font-medium text-gray-700">Team Members</span>
-          <button className="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600 transition">
-            Invite
-          </button>
-          <button className="rounded bg-gray-200 px-3 py-1 text-gray-700 hover:bg-gray-300 transition">
-            Archive
-          </button>
+          <InviteButton/>
+          <ArchiveButton/>
         </div>
       </div>
 
@@ -33,13 +35,12 @@ const DashboardPage = () => {
       <div className="mt-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-5">
           <div className="sm:col-span-3 min-w-0">
-            <AskQuestionCard />
+            <AskQuestionCard projectId={projectId}/>
           </div>
           <div className="sm:col-span-2 min-w-0">
             <div className="rounded border border-gray-200 bg-white p-4 shadow-sm">
-              <h2 className="font-semibold text-gray-800">Meeting Card</h2>
-              <p className="text-sm text-gray-600 mt-2">Details go here...</p>
-            </div>
+              <MettingCard/>
+               </div>
           </div>
         </div>
       </div>

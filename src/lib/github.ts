@@ -62,7 +62,6 @@ export const pollCommits = async (projectId: string) => {
       commitHashes
     );
     if (unprocessedCommits.length === 0) {
-      console.log(`✅ All commits are already processed for project ${projectId}`);
       return;
     }
 
@@ -86,7 +85,6 @@ export const pollCommits = async (projectId: string) => {
         : "Summary unavailable"
     );
 
-    console.log(`📦 Processing ${summaries.length} commits...`);
 
     const commitInsert = await db.commits.createMany({
       data: summaries.map((summary, index) => ({
@@ -101,7 +99,6 @@ export const pollCommits = async (projectId: string) => {
       skipDuplicates: true,
     });
 
-    console.log(`✅ Inserted ${commitInsert.count} commits`);
     return commitInsert;
   } catch (error) {
     console.error(`❌ pollCommits failed for project ${projectId}:`, error);

@@ -1,10 +1,12 @@
 import "~/styles/globals.css";
-
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "sonner";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "./api/uploadthing/core";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -25,6 +27,10 @@ export default function RootLayout({
 
     <html lang="en" className={`${geist.variable}`}>
       <body>
+          <NextSSRPlugin
+          
+          routerConfig={extractRouterConfig(ourFileRouter)}
+        />
         <TRPCReactProvider>{children}</TRPCReactProvider>
         <Toaster/>
       </body>

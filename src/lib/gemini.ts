@@ -29,7 +29,6 @@ ${commitDiff}
       return "Summary unavailable (AI returned no text)";
     }
 
-    console.log("✅ Gemini Summary:", summaryText);
     return summaryText;
   } catch (error) {
     console.error("❌ Failed to summarise commit with Gemini:", error);
@@ -46,7 +45,6 @@ summariseCommit(
 
 export async function summariseCode(doc: Document) {
   try {
-    console.log("📄 Getting summary for:", doc.metadata?.source);
 
     // Get Gemini model
     const model = ai.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -82,7 +80,6 @@ ${code}
       return "Summary unavailable (AI returned no text)";
     }
 
-    console.log("✅ Gemini Summary:", summaryText);
     return summaryText;
   } catch (error) {
     console.error("❌ Failed to summarise code with Gemini:", error);

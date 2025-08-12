@@ -26,6 +26,75 @@ model User {
 
 
     UserToProject UserToProject[]
+
+    questionAsked Question[]
+
+    Stripe Stripe[]
+}
+
+
+model Question {
+    id String @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    question String
+    answer String
+    filesReferences Json?
+
+    projectId String
+
+    project Project @relation(fields:[projectId],references: [id])
+
+    userId String
+    user User  @relation(fields: [userId],references: [id])
+
+
+}
+
+model Meeting {
+    id String @id @default(uuid())
+    createAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name String
+    meetingUrl String
+    projectId String
+    project Project @relation(fields: [projectId],references: [id])
+    status MeetingStatus @default(PROCESSING)
+    issues Issue[]
+
+}
+
+
+model Issue{
+    id String @id @default(uuid())
+    createAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    start String
+    end String
+    gist String
+    headline String
+    summary String
+
+    meetingId String
+    meeting Meeting @relation(fields: [meetingId],references: [id])
+}
+
+
+enum MeetingStatus{
+    PROCESSING
+    COMPLETED
+}
+
+model Stripe {
+    id String @id @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    userId String
+    user User @relation(fields: [userId],references: [id])
+    credits Int
 }
 
 model Project {
@@ -43,6 +112,9 @@ model Project {
     Commit Commits[]
 
     SourceCodeEmbedding SourceCodeEmbedding[]
+    savedQuestions Question[]
+
+    Meeting Meeting[]
 }
 
 

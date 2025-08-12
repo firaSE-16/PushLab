@@ -63,7 +63,6 @@ AI assistant will try to be as detailed as possible when generating responses.
 
     const result = await model.generateContent(prompt);
     const text = (await result.response).text();
-    console.log(results)
     
     return NextResponse.json({
       answer: text,

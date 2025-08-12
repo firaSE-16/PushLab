@@ -5,12 +5,10 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { Textarea } from "~/components/ui/textarea";
-import { Box, FileText, RefreshCw, AlertCircle, Code } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { ScrollArea } from "~/components/ui/scroll-area";
-import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
-import atomOneDark from 'react-syntax-highlighter/dist/esm/styles/hljs/atom-one-dark';
-
+import { Box, RefreshCw, AlertCircle, Code } from "lucide-react";
+import { toast } from "sonner";
+import { api } from "~/trpc/react";
+import CodeReferences from "./code-refrences";
 
 type SourceFile = {
   fileName: string;
@@ -24,12 +22,13 @@ const AskQuestionCard = ({ projectId }: { projectId: string }) => {
   const [question, setQuestion] = useState("");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<string | undefined>();
   const [response, setResponse] = useState<{
     answer: string;
     sources: SourceFile[];
     error?: string;
   } | null>(null);
+
+  const saveAnswer = api.project.saveAnswer.useMutation();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -83,7 +82,6 @@ LCEL_CONFIG = {
             }
           ]
         });
-        setActiveTab("chains.py");
         setLoading(false);
       }, 1500);
     } catch (err) {
@@ -97,30 +95,6 @@ LCEL_CONFIG = {
     }
   };
 
-  const formatSimilarity = (similarity?: number) => {
-    if (!similarity) return null;
-    return `${(similarity * 100).toFixed(1)}% match`;
-  };
-
-  const formatCode = (code?: string, language: string = "text") => {
-    if (!code) return <p className="text-sm text-muted-foreground">No code available</p>;
-
-    return (
-      <SyntaxHighlighter
-        language={"python"}
-        style={atomOneDark}
-        customStyle={{
-          borderRadius: "0.5rem",
-          padding: "1rem",
-          fontSize: "0.85rem",
-          overflowX: "hidden"
-        }}
-      >
-        {code}
-      </SyntaxHighlighter>
-    );
-  };
-
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -132,6 +106,31 @@ LCEL_CONFIG = {
               <Code className="h-5 w-5 text-blue-500" />
               Code Analysis Results
             </DialogTitle>
+            <Button
+              disabled={saveAnswer.isPending}
+              variant="outline"
+              onClick={() => {
+                if (!response) return;
+                saveAnswer.mutate(
+                  {
+                    projectId,
+                    question,
+                    answer: response.answer || "",
+                    fileReferences: response.sources
+                  },
+                  {
+                    onSuccess: () => {
+                      toast.success("Answer saved!");
+                    },
+                    onError: () => {
+                      toast.error("Failed to save answer!");
+                    }
+                  }
+                );
+              }}
+            >
+              Save Answer
+            </Button>
           </DialogHeader>
 
           {loading ? (
@@ -164,59 +163,15 @@ LCEL_CONFIG = {
                 </div>
               </div>
 
-              {/* Referenced Files Tabs */}
+              {/* 🔁 Replaced old code section with CodeReferences */}
               {response?.sources && response.sources.length > 0 && (
-                <div className="flex-1 flex flex-col overflow-hidden border rounded-md">
-                  <Tabs
-                    value={activeTab}
-                    onValueChange={setActiveTab}
-                    className="flex-1 flex flex-col overflow-hidden"
-                  >
-                    <TabsList className="flex overflow-x-auto p-2 border-b rounded-none bg-muted">
-                      {response.sources.map((source, index) => (
-                        <TabsTrigger
-                          key={index}
-                          value={source.fileName}
-                          className="flex items-center gap-2 text-xs px-3 py-1.5 whitespace-nowrap"
-                        >
-                          <FileText className="h-4 w-4" />
-                          <span className="truncate max-w-[120px]">{source.fileName}</span>
-                          {source.similarity && (
-                            <span className="ml-1 bg-blue-100 text-blue-800 text-xs px-1.5 py-0.5 rounded-full">
-                              {formatSimilarity(source.similarity)}
-                            </span>
-                          )}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-
-                    <div className="flex-1 overflow-y-auto">
-                      {response.sources.map((source, index) => (
-                        <TabsContent
-                          key={index}
-                          value={source.fileName}
-                          className="h-full"
-                        >
-                          <div className="flex flex-col h-full">
-                            <div className="p-3 border-b">
-                              <div className="flex justify-between items-center">
-                                <h4 className="text-sm font-medium truncate">{source.fileName}</h4>
-                                {source.lastUpdated && (
-                                  <p className="text-xs text-muted-foreground">
-                                    Updated: {new Date(source.lastUpdated).toLocaleString()}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                            <ScrollArea className="flex-1 p-4 overflow-y-auto">
-                              {formatCode(source.sourceCode, source.language)}
-                            </ScrollArea>
-                          </div>
-                        </TabsContent>
-                      ))}
-                    </div>
-                  </Tabs>
-                </div>
+                <CodeReferences
+                  filesReferences={response.sources.map((source) => ({
+                    fileName: source.fileName,
+                    sourceCode: source.sourceCode || "",
+                    summary: [] // Add summaries here if needed
+                  }))}
+                />
               )}
             </div>
           )}

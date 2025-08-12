@@ -1,7 +1,7 @@
 import { UserButton } from '@clerk/nextjs';
 import React from 'react';
 import { SidebarProvider } from '~/components/ui/sidebar';
-import AppSidebar from '../_components/app-sidebar';
+import AppSidebar from '../../_components/app-sidebar';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (

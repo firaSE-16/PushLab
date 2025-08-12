@@ -3,7 +3,7 @@ import { request } from 'http';
 
 
 
-const isPublicRoute = createRouteMatcher(['/sign-in(.*)','/sign-up(.*)','/sync-user(.*)']);
+const isPublicRoute = createRouteMatcher(['/sign-in(.*)','/sign-up(.*)','/sync-user(.*)','/api/uploadthing','/api/webhook/stripe(.*)']);
 
 export default clerkMiddleware(async (auth,request)=>{
     if(!isPublicRoute(request)){
