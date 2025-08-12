@@ -36,7 +36,7 @@ This tool helps developers interact with repositories intelligently, manage proj
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/yourusername/dionysus.git
+git clone https://github.com/firaSE-16/PushLab.git
 cd pushlab
 npm install
 # or
